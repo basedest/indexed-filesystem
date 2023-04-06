@@ -1,72 +1,23 @@
-import { openDB } from "idb";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
+import getCpuCores from "./getCpuCores";
 
-declare global {
-  interface Window {
-    showDirectoryPicker(options:any) : Promise<FileSystemHandle>
-  }
-}
+function App() {
+  const [directoryHandle, setDirectoryHandle] = useState<null | FileSystemHandle>(null);
 
-const DB_NAME = "my-db-2";
-const STORE_NAME = "my-store";
-const KEY_NAME = "my-key";
-
-export default function App() {
-  const [dirHandle, setDirHandle] = useState<FileSystemHandle | null>(null);
-
-  useEffect(() => {
-    openDB(DB_NAME, 1, {
-      upgrade(db) {
-        db.createObjectStore(STORE_NAME);
-      },
-    }).then(db => {
-      db.get(STORE_NAME, KEY_NAME).then(async val => {
-        if (val) {
-          setDirHandle(val);
-        } else {
-          const handle = await window.showDirectoryPicker({
-            type: "openDirectory"
-          });
-          setDirHandle(handle);
-        }
-      })
-    })
-  }, []);
-
-  function handleGetValue() {
-    openDB(DB_NAME, 1).then(db => {
-      db.get(STORE_NAME, KEY_NAME).then(async val => {
-        if (val) {
-          setDirHandle(val);
-        } else {
-          const handle = await window.showDirectoryPicker({
-            type: "openDirectory"
-          });
-          setDirHandle(handle);
-        }
-      });
-    });
-  }
-
-  function handleSetValue() {
-    if (!dirHandle) {
-      alert("no handle found");
-      return;
-    }
-    openDB(DB_NAME, 1).then(db => {
-      db.put(STORE_NAME, dirHandle, KEY_NAME).then(() => {
-        console.log("yappy");
-      });
-    });
+  console.log(getCpuCores());
+  
+  function onChooseDirectoryClicked(event : React.MouseEvent) {
+    window.showDirectoryPicker({type: "openDirectory"})
+    .then((handle) => setDirectoryHandle(handle))
+    .catch(console.error)
   }
 
   return (
     <div>
-      <button onClick={handleGetValue}>Get Directory Handle</button>
-      <button onClick={handleSetValue}>
-        Store handle in DB
-      </button>
-      {dirHandle && <p>{dirHandle.name}</p>}
+      <button onClick={onChooseDirectoryClicked}>Choose Directory</button>
+      {/*directoryHandle && <Directory directoryHandle={directoryHandle} />*/}
     </div>
   );
 }
+
+export default App;
