@@ -1,22 +1,20 @@
 import React, { useState } from "react";
-import getCpuCores from "./getCpuCores";
+import DirectoryView from "./Directory";
 
 function App() {
-  const [directoryHandle, setDirectoryHandle] = useState<null | FileSystemHandle>(null);
-
-  console.log(getCpuCores());
+  const [directoryHandle, setDirectoryHandle] = useState<null | FileSystemDirectoryHandle>(null);
   
   function onChooseDirectoryClicked(event : React.MouseEvent) {
     window.showDirectoryPicker({type: "openDirectory"})
-    .then((handle) => setDirectoryHandle(handle))
+    .then((handle) => setDirectoryHandle(handle as FileSystemDirectoryHandle))
     .catch(console.error)
   }
 
   return (
-    <div>
+    <main className="app">
       <button onClick={onChooseDirectoryClicked}>Choose Directory</button>
-      {/*directoryHandle && <Directory directoryHandle={directoryHandle} />*/}
-    </div>
+      {directoryHandle && <DirectoryView directoryHandle={directoryHandle} />}
+    </main>
   );
 }
 

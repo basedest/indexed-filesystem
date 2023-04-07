@@ -1,8 +1,12 @@
+import "../fix";
+
 export default class FileNavigator {
     private readonly root : FileSystemDirectoryHandle;
     private pathStack : FileSystemDirectoryHandle[];
 
     public constructor(root : FileSystemDirectoryHandle) {
+        console.log(root);
+        
         this.root = root;
         this.pathStack = [this.root];
     }
@@ -14,9 +18,13 @@ export default class FileNavigator {
         return this.pathStack.pop()!;
     }
 
+    public getCurrentDirectory() {
+        return this.pathStack.at(-1)!;
+    }
+
     public async goDown(dirName: string) {
         try {
-            const subdirectoryHandle = await this.pathStack.at(-1)!.getDirectoryHandle(dirName);
+            const subdirectoryHandle = await this.getCurrentDirectory().getDirectoryHandle(dirName);
             this.pathStack.push(subdirectoryHandle);
             return subdirectoryHandle; 
         } catch (error) {
@@ -25,12 +33,19 @@ export default class FileNavigator {
     }
 
     public async getContents() {
+        let entries = []
+        //@ts-ignore
         for await (const value of this.pathStack.at(-1)!.values()) {
-            if (value instanceof FileSystemDirectoryHandle) {
-                logEntries(value, `${prefix}/${key}`);
-            } else {
-                console.log({key:`${prefix}/${key}`, value})
-            }
+            entries.push(value);
         }
+        return entries;
+    }
+
+    public isRoot() {
+        return this.pathStack.length === 1;
+    }
+
+    public getPath() {
+        return this.pathStack.reduce((path:string, elem) => path.concat(elem.name+'/'), '');
     }
 }

@@ -1,56 +1,46 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import FileNavigator from "./features/FileNavigator";
 
-function DirectoryView({ directoryHandle }) {
-  const [directoryEntries, setDirectoryEntries] = useState([]);
+export default function DirectoryView({ directoryHandle: rootHandle }: {directoryHandle: FileSystemDirectoryHandle}) {
+  const [directoryEntries, setDirectoryEntries] = useState<FileSystemHandle[]>([]);
+  const fileNavigator = useMemo(() => new FileNavigator(rootHandle), [rootHandle])
+  const path = useMemo(() => fileNavigator.getPath().slice(0,-1), [directoryEntries]);
 
   useEffect(() => {
-    if (directoryHandle) {
-      directoryHandle
-        .getEntries()
-        .then((entries) => {
-          setDirectoryEntries(entries);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  }, [directoryHandle]);
+    fileNavigator.getContents()
+    .then(contents => setDirectoryEntries(contents))
+  }, [rootHandle]);
 
-  function handleEntryClick(entry) {
-    if (entry instanceof FileSystemDirectoryHandle) {
-      setDirectoryEntries([]);
-      directoryHandle
-        .getDirectory(entry.name, { create: false })
-        .then((subDirectoryHandle) => {
-          setDirectoryEntries([subDirectoryHandle]);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+  function handleEntryClick(entry: FileSystemHandle) {
+    if (!(entry instanceof FileSystemDirectoryHandle)) {
+      return;
     }
+    fileNavigator.goDown(entry.name)
+    .then(() => fileNavigator.getContents())
+    .then(contents => setDirectoryEntries(contents))
+    .catch(console.error)
   }
 
   function handleBackClick() {
-    directoryHandle
-      .getParent()
-      .then((parentHandle) => {
-        setDirectoryEntries([]);
-        setDirectoryHandle(parentHandle);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    const handle = fileNavigator.goUp();
+    if (!handle) {
+      return;
+    }
+    fileNavigator.getContents()
+    .then(contents => setDirectoryEntries(contents))
   }
+
+  const isDir = (entry:any) => entry instanceof FileSystemDirectoryHandle;
 
   return (
     <div>
-      <h2>{directoryHandle?.name}</h2>
-      {directoryHandle?.parent && (
+      <h2>{path}</h2>
+      {!fileNavigator.isRoot() && (
         <button onClick={handleBackClick}>Back</button>
       )}
-      <ul>
+      <ul className="entry-list">
         {directoryEntries.map((entry) => (
-          <li key={entry.name} onClick={() => handleEntryClick(entry)}>
+          <li key={entry.name} onClick={() => handleEntryClick(entry)} className={isDir(entry) ? "entry dir" : "entry"}>
             {entry.name}
           </li>
         ))}
