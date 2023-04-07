@@ -1,4 +1,4 @@
-:root {
+/* :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
@@ -69,27 +69,35 @@ button:focus-visible {
   }
 }
 
-.entry-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.entry {
-  display: block;
-  padding: 0.5rem;
-  border: 1px solid #f9f9f9;
-  border-radius: 10px;
-}
-
-.dir {
-  background-color: #535bf2;
-  cursor: pointer;
-}
-
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
 }
+
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.file {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.file-icon {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.file-name {
+  text-align: center;
+}
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

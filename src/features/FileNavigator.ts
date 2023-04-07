@@ -5,8 +5,6 @@ export default class FileNavigator {
     private pathStack : FileSystemDirectoryHandle[];
 
     public constructor(root : FileSystemDirectoryHandle) {
-        console.log(root);
-        
         this.root = root;
         this.pathStack = [this.root];
     }
@@ -33,10 +31,15 @@ export default class FileNavigator {
     }
 
     public async getContents() {
-        let entries = []
-        //@ts-ignore
-        for await (const value of this.pathStack.at(-1)!.values()) {
-            entries.push(value);
+        let entries : DirectoryEntry[] = []
+        //@ts-ignore because TypeScript's stupid-ass mf (fr 💀) 
+        for await (const handle of this.pathStack.at(-1)!.values()) {
+            if (handle instanceof FileSystemDirectoryHandle) {
+                entries.push({handle});
+                continue;
+            }
+            const file = await handle.getFile();
+            entries.push({handle, file});
         }
         return entries;
     }
