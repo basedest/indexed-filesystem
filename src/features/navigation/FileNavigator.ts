@@ -1,4 +1,4 @@
-import "../fix";
+import DirectoryEntry from "../../entities/DirectoryEntry";
 
 export default class FileNavigator {
     private readonly root : FileSystemDirectoryHandle;
@@ -32,7 +32,7 @@ export default class FileNavigator {
 
     public async getContents() {
         let entries : DirectoryEntry[] = []
-        //@ts-ignore because TypeScript's stupid-ass mf (fr 💀) 
+        //@ts-ignore because TypeScript doesn't know about FileSystemDirectoryHandle.values() yet
         for await (const handle of this.pathStack.at(-1)!.values()) {
             if (handle instanceof FileSystemDirectoryHandle) {
                 entries.push({handle});

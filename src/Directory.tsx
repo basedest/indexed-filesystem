@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import FileNavigator from "./features/FileNavigator";
+import FileNavigator from "./features/navigation/FileNavigator";
 import FolderIcon from "@heroicons/react/24/outline/FolderIcon";
 import FileIcon from "@heroicons/react/24/outline/DocumentIcon";
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
+import DirectoryEntry from "./entities/DirectoryEntry";
 
 export default function DirectoryView({ directoryHandle: rootHandle }: {directoryHandle: FileSystemDirectoryHandle}) {
   const [directoryEntries, setDirectoryEntries] = useState<DirectoryEntry[]>([]);

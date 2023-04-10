@@ -12,8 +12,13 @@ function App() {
 
   return (
     <main className="flex justify-center items-center bg-gray-100">
-      <div className="w-full max-w-3xl bg-white shadow-md rounded-md p-4">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full mb-4 mx-auto block" onClick={onChooseDirectoryClicked}>Set new root</button>
+      <div className="w-full max-w-3xl bg-white shadow-md p-5 min-h-screen">
+        <button 
+        className={`bg-blue-600 hover:bg-blue-700 transition hover:scale-105 text-white py-2 px-4 rounded-xl mb-4 mx-auto block`} 
+        onClick={onChooseDirectoryClicked}
+        >
+          Set new root
+        </button>
         {directoryHandle && <DirectoryView directoryHandle={directoryHandle} />}
       </div>
     </main>
