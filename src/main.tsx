@@ -2,13 +2,16 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
+import { Provider } from 'react-redux'
+import { store } from './app/store'
+import { loadStoredRoot } from './features/navigation/navigationSlice'
 
-const start = async () => {
-  ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-    <React.StrictMode>
+store.dispatch(loadStoredRoot())
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <Provider store={store}>
       <App />
-    </React.StrictMode>
-  )
-}
-
-start()
+    </Provider>
+  </React.StrictMode>
+)

@@ -24,7 +24,7 @@ export default class FileNavigator {
         try {
             const subdirectoryHandle = await this.getCurrentDirectory().getDirectoryHandle(dirName);
             this.pathStack.push(subdirectoryHandle);
-            return subdirectoryHandle; 
+            return subdirectoryHandle;
         } catch (error) {
             throw new Error("unreachable subdirectory");
         }
