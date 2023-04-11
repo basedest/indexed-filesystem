@@ -38,18 +38,17 @@ function App() {
     }
   }, [directoryHandle]);
 
-  function onChooseDirectoryClicked() {
-    // @ts-ignore
-    window.showDirectoryPicker({type: "openDirectory"})
-    .then((handle: FileSystemDirectoryHandle) => {
+  async function onChooseDirectoryClicked() {
+    try {
+      // @ts-ignore
+      const handle = await window.showDirectoryPicker({type: "openDirectory"})
       setDirectoryHandle(handle);
       idb!.setRoot(handle);
       setError(false);
-    })
-    .catch((e:Error) => {
+    } catch (e: unknown) {
       console.error(e);
       setError(true);
-    })
+    }
   }
 
   return (
