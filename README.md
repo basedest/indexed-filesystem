@@ -10,6 +10,6 @@ You can also change root directory any time if you wish.
 
 ## Explanation
 
-The IndexedDB part is needed to store `FileSystemDirectoryHandle` in browser cache so
+The IndexedDB part is needed to persistently store `FileSystemDirectoryHandle` so
 site could load it when the page's reloaded. However, you still need to grant permission every time you
 refresh the page. It's not my fault, it's the way things work in Chromium rn (in Firefox they simply don't work at all)
