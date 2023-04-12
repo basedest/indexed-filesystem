@@ -1,12 +1,12 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import FileNavigator from "../features/navigation/FileNavigator";
-import FolderIcon from "@heroicons/react/24/outline/FolderIcon";
-import FileIcon from "@heroicons/react/24/outline/DocumentIcon";
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
-import DirectoryEntry from "../entities/DirectoryEntry";
+import DirectoryEntryEntity from "../entities/DirectoryEntry";
+import DirectoryEntry from "./DirectoryEntry";
 
 export default function DirectoryView({ directoryHandle: rootHandle }: {directoryHandle: FileSystemDirectoryHandle}) {
-  const [directoryEntries, setDirectoryEntries] = useState<DirectoryEntry[]>([]);
+  const [directoryEntries, setDirectoryEntries] = useState<DirectoryEntryEntity[]>([]);
+
   const fileNavigator = useMemo(() => new FileNavigator(rootHandle), [rootHandle])
   const path = useMemo(() => fileNavigator.getPath().slice(0,-1), [directoryEntries]);
 
@@ -15,25 +15,28 @@ export default function DirectoryView({ directoryHandle: rootHandle }: {director
     .then(contents => setDirectoryEntries(contents))
   }, [rootHandle]);
 
-  function handleEntryClick(entry: FileSystemHandle) {
-    console.log(entry);
-    if (!(entry instanceof FileSystemDirectoryHandle)) {
-      return;
+  const handleEntryClick = useCallback(async (entry: FileSystemHandle) => {
+    try {
+      console.debug(entry);
+      if (!(entry instanceof FileSystemDirectoryHandle)) {
+        return;
+      }
+      await fileNavigator.goDown(entry.name);
+      const contents = await fileNavigator.getContents();
+      setDirectoryEntries(contents);
+    } catch (error) {
+      console.error(error);
     }
-    fileNavigator.goDown(entry.name)
-    .then(() => fileNavigator.getContents())
-    .then(contents => setDirectoryEntries(contents))
-    .catch(console.error)
-  }
+  }, [fileNavigator]);
 
-  function handleBackClick() {
+  const handleBackClick = useCallback(() => {
     const handle = fileNavigator.goUp();
     if (!handle) {
       return;
     }
     fileNavigator.getContents()
     .then(contents => setDirectoryEntries(contents))
-  }
+  }, [fileNavigator]);
 
   return (
     <div className="mx-auto max-w-screen-md">
@@ -45,36 +48,15 @@ export default function DirectoryView({ directoryHandle: rootHandle }: {director
         <h2 className="text-lg font-medium">{path}</h2>
       </div>
       <ul className="space-y-2">
-        {directoryEntries.sort(sortCallback).map(({handle, file}) => (
-          <li key={handle.name} className="flex justify-between items-center p-3 rounded-md cursor-pointer hover:bg-gray-100 transition duration-300" onClick={() => handleEntryClick(handle)}>
-            <div className="flex">
-              <div className="w-8 h-8 flex items-center justify-center mr-4">
-                {isDir(handle) ? <FolderIcon className="h-6 w-6 text-blue-500" /> : <FileIcon className="h-6 w-6 text-gray-400" />}
-              </div>
-              <div>{handle.name}</div>
-            </div>
-            {
-              file && <div className="flex items-center ml-auto text-gray-500">
-              <div className="w-17 text-right">{bytesToSize(file.size)}</div>
-              <time className="ml-4">{new Date(file!.lastModified).toLocaleDateString()}</time>
-              </div>
-            }
-          </li>
+        {directoryEntries.sort(sortCallback).map((entry) => (
+          <DirectoryEntry key={entry.handle.name} entry={entry} handleClick={handleEntryClick} />
         ))}
       </ul>
     </div>
   );
 }
 
-function bytesToSize(bytes: number) {
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-  if (bytes === 0) return '0 B';
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
-}
-
-
-const isDir = (handle:any) => handle instanceof FileSystemDirectoryHandle;
+export const isDir = (handle:any) => handle instanceof FileSystemDirectoryHandle;
 
 const sortCallback = (lhs:any,rhs:any) => {
   const lhsDir = isDir(lhs.handle);
