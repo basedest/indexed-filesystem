@@ -8,6 +8,8 @@ Ok so basically you first need to grant permission to your local directory (that
 and then its contents become available for you to see in browser.
 You can also change root directory any time if you wish.
 
+![example](.github/example.png)
+
 ## Explanation
 
 The IndexedDB part is needed to persistently store `FileSystemDirectoryHandle` so
