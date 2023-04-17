@@ -38,7 +38,7 @@ function App() {
     }
   }, [directoryHandle]);
 
-  async function onChooseDirectoryClicked() {
+  const onChooseDirectoryClicked = useCallback(async () => {
     try {
       // @ts-ignore
       const handle = await window.showDirectoryPicker({type: "openDirectory"})
@@ -49,30 +49,33 @@ function App() {
       console.error(e);
       setError(true);
     }
-  }
+  }, [idb]);
 
   return (
     <main className="flex justify-center items-center bg-gray-100">
       <div className="w-full max-w-3xl bg-white shadow-md p-5 min-h-screen">
       {
-        popUp ? 
-        <button onClick={onPopUpClicked} className={buttonClasses}>
-          Grant permission
-        </button>
-        : <button 
-        disabled={!idb}
-        className={buttonClasses} 
-        onClick={onChooseDirectoryClicked}
-        >
-          Set new root
-        </button>
+        popUp 
+        ? 
+          <button onClick={onPopUpClicked} className={buttonClasses}>
+            Grant permission
+          </button>
+        :
+          <button 
+            disabled={!idb}
+            className={buttonClasses} 
+            onClick={onChooseDirectoryClicked}
+          >
+            Set new root
+          </button>
       }
       {
-        error ?
-        <section className="flex flex-col items-center">
-          <h1 className="text-lg font-medium text-red-600">Oops! Seems like there's an error</h1>
-          <p className="text-gray-600">See logs to find the issue</p>
-        </section>
+        error 
+        ?
+          <section className="flex flex-col items-center">
+            <h1 className="text-lg font-medium text-red-600">Oops! Seems like there's an error</h1>
+            <p className="text-gray-600">See logs to find the issue</p>
+          </section>
         : (directoryHandle && !popUp) && <DirectoryView directoryHandle={directoryHandle} />
       }
       </div>
