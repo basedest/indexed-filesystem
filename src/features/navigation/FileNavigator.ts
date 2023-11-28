@@ -2,6 +2,7 @@ import DirectoryEntry from "../../entities/DirectoryEntry";
 
 export default class FileNavigator {
     private readonly root : FileSystemDirectoryHandle;
+
     private pathStack : FileSystemDirectoryHandle[];
 
     public constructor(root : FileSystemDirectoryHandle) {
@@ -31,15 +32,16 @@ export default class FileNavigator {
     }
 
     public async getContents() {
-        let entries : DirectoryEntry[] = []
-        //@ts-ignore because TypeScript doesn't know about FileSystemDirectoryHandle.values() yet
+        const entries : DirectoryEntry[] = []
+        // @ts-expect-error because TypeScript doesn't know about FileSystemDirectoryHandle.values() yet
+        // eslint-disable-next-line no-restricted-syntax
         for await (const handle of this.pathStack.at(-1)!.values()) {
             if (handle instanceof FileSystemDirectoryHandle) {
                 entries.push({handle});
-                continue;
+            } else {
+                const file = await handle.getFile();
+                entries.push({handle, file});
             }
-            const file = await handle.getFile();
-            entries.push({handle, file});
         }
         return entries;
     }
@@ -49,6 +51,6 @@ export default class FileNavigator {
     }
 
     public getPath() {
-        return this.pathStack.reduce((path:string, elem) => path.concat(elem.name+'/'), '');
+        return this.pathStack.reduce((path:string, elem) => path.concat(`${elem.name}/`), '');
     }
 }

@@ -1,15 +1,15 @@
 import { memo } from 'react'
-import DirectoryEntryEntity from '../entities/DirectoryEntry';
-import { isDir } from './Directory';
 import FolderIcon from '@heroicons/react/24/outline/FolderIcon';
 import FileIcon from "@heroicons/react/24/outline/DocumentIcon";
+import DirectoryEntryEntity from '../entities/DirectoryEntry';
+import isDir from '../utils/isDir';
 
 interface Props {
     entry : DirectoryEntryEntity,
     handleClick: (handle: FileSystemHandle) => void
 }
 
-const DirectoryEntry = ({entry, handleClick}: Props) => {
+function DirectoryEntry({entry, handleClick}: Props) {
     const {handle, file} = entry;
     return (
         <li 
@@ -36,11 +36,11 @@ function bytesToSize(bytes: number) {
     const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
     if (bytes === 0) return '0 B';
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+    return `${(bytes / 1024**i).toFixed(2)} ${sizes[i]}`;
 }
 
 function clipName(name: string) {
-    return name.length > 30 ? name.slice(0,15) + "..." + name.slice(-15) : name;
+    return name.length > 30 ? `${name.slice(0,15)  }...${  name.slice(-15)}` : name;
 }
 
 export default memo(DirectoryEntry);

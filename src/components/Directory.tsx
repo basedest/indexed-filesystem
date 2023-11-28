@@ -1,8 +1,22 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import FileNavigator from "../features/navigation/FileNavigator";
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
+import FileNavigator from "../features/navigation/FileNavigator";
 import DirectoryEntryEntity from "../entities/DirectoryEntry";
 import DirectoryEntry from "./DirectoryEntry";
+import isDir from "../utils/isDir";
+
+const sortCallback = (lhs:any,rhs:any) => {
+  const lhsDir = isDir(lhs.handle);
+  const rhsDir = isDir(rhs.handle);
+  
+  if (lhsDir && !rhsDir) {
+    return -1;
+  }
+  if (lhsDir && rhsDir) {
+    return 0;
+  }
+  return 1;
+}
 
 export default function DirectoryView({ directoryHandle: rootHandle }: {directoryHandle: FileSystemDirectoryHandle}) {
   const [directoryEntries, setDirectoryEntries] = useState<DirectoryEntryEntity[]>([]);
@@ -54,19 +68,4 @@ export default function DirectoryView({ directoryHandle: rootHandle }: {director
       </ul>
     </div>
   );
-}
-
-export const isDir = (handle:any) => handle instanceof FileSystemDirectoryHandle;
-
-const sortCallback = (lhs:any,rhs:any) => {
-  const lhsDir = isDir(lhs.handle);
-  const rhsDir = isDir(rhs.handle);
-  
-  if (lhsDir && !rhsDir) {
-    return -1;
-  }
-  if (lhsDir && rhsDir) {
-    return 0;
-  }
-  return 1;
 }
