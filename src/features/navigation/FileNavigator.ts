@@ -1,11 +1,11 @@
-import DirectoryEntry from "../../entities/DirectoryEntry";
+import DirectoryEntry from '../../entities/DirectoryEntry';
 
 export default class FileNavigator {
-    private readonly root : FileSystemDirectoryHandle;
+    private readonly root: FileSystemDirectoryHandle;
 
-    private pathStack : FileSystemDirectoryHandle[];
+    private pathStack: FileSystemDirectoryHandle[];
 
-    public constructor(root : FileSystemDirectoryHandle) {
+    public constructor(root: FileSystemDirectoryHandle) {
         this.root = root;
         this.pathStack = [this.root];
     }
@@ -23,24 +23,25 @@ export default class FileNavigator {
 
     public async goDown(dirName: string) {
         try {
-            const subdirectoryHandle = await this.getCurrentDirectory().getDirectoryHandle(dirName);
+            const subdirectoryHandle =
+                await this.getCurrentDirectory().getDirectoryHandle(dirName);
             this.pathStack.push(subdirectoryHandle);
             return subdirectoryHandle;
         } catch (error) {
-            throw new Error("unreachable subdirectory");
+            throw new Error('unreachable subdirectory');
         }
     }
 
     public async getContents() {
-        const entries : DirectoryEntry[] = []
+        const entries: DirectoryEntry[] = [];
         // @ts-expect-error because TypeScript doesn't know about FileSystemDirectoryHandle.values() yet
         // eslint-disable-next-line no-restricted-syntax
         for await (const handle of this.pathStack.at(-1)!.values()) {
             if (handle instanceof FileSystemDirectoryHandle) {
-                entries.push({handle});
+                entries.push({ handle });
             } else {
                 const file = await handle.getFile();
-                entries.push({handle, file});
+                entries.push({ handle, file });
             }
         }
         return entries;
@@ -51,6 +52,9 @@ export default class FileNavigator {
     }
 
     public getPath() {
-        return this.pathStack.reduce((path:string, elem) => path.concat(`${elem.name}/`), '');
+        return this.pathStack.reduce(
+            (path: string, elem) => path.concat(`${elem.name}/`),
+            '',
+        );
     }
 }

@@ -1,10 +1,10 @@
-import { IDBPDatabase, openDB } from "idb";
-import { DB_NAME, ROOT_KEY, STORE_NAME, AppSchema } from "./schema";
+import { IDBPDatabase, openDB } from 'idb';
+import { DB_NAME, ROOT_KEY, STORE_NAME, AppSchema } from './schema';
 
 export default class IDBManager {
-    private constructor(private db : IDBPDatabase<AppSchema>) {}
+    private constructor(private db: IDBPDatabase<AppSchema>) {}
 
-    public static async init(dbName = DB_NAME) : Promise<IDBManager> {
+    public static async init(dbName = DB_NAME): Promise<IDBManager> {
         const db = await openDB<AppSchema>(dbName, 1, {
             upgrade(database) {
                 database.createObjectStore(STORE_NAME);
@@ -17,7 +17,7 @@ export default class IDBManager {
         return this.db.get(STORE_NAME, ROOT_KEY);
     }
 
-    public async setRoot(handle : FileSystemDirectoryHandle) {
+    public async setRoot(handle: FileSystemDirectoryHandle) {
         return this.db.put(STORE_NAME, handle, ROOT_KEY);
     }
 }
