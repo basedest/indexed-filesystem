@@ -8,5 +8,6 @@ export const bytesToSize = (bytes: number) => {
     return `${(bytes / 1024 ** i).toFixed(2)} ${sizes[i]}`;
 };
 
+// TODO: maybe use some sort of ellipsis instead
 export const clipName = (name: string) =>
     name.length > 30 ? `${name.slice(0, 15)}...${name.slice(-15)}` : name;

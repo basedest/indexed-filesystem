@@ -1,11 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import ArrowLeftIcon from '@heroicons/react/24/outline/ArrowLeftIcon';
-import FileNavigator from '../features/navigation/FileNavigator';
-import DirectoryEntryEntity from '../entities/DirectoryEntry';
-import DirectoryEntry from './DirectoryEntry';
-import { isDir } from '../utils/commonUtils';
+import { isDir } from '@shared/lib/commonUtils';
+import FileNavigator from '@entities/FileSystemEntry/lib/FileNavigator';
+import FileSystemEntry from '@entities/FileSystemEntry/ui/FileSystemEntry';
+import type { FileSystemEntryEntity } from '@entities/FileSystemEntry/model';
 
-const sortCallback = (lhs: DirectoryEntryEntity, rhs: DirectoryEntryEntity) => {
+const sortCallback = (
+    lhs: FileSystemEntryEntity,
+    rhs: FileSystemEntryEntity,
+) => {
     const lhsDir = isDir(lhs.handle);
     const rhsDir = isDir(rhs.handle);
 
@@ -24,7 +27,7 @@ export default function DirectoryView({
     directoryHandle: FileSystemDirectoryHandle;
 }) {
     const [directoryEntries, setDirectoryEntries] = useState<
-        DirectoryEntryEntity[]
+        FileSystemEntryEntity[]
     >([]);
 
     const fileNavigator = useMemo(
@@ -85,7 +88,7 @@ export default function DirectoryView({
             </div>
             <ul className="space-y-2">
                 {directoryEntries.sort(sortCallback).map((entry) => (
-                    <DirectoryEntry
+                    <FileSystemEntry
                         key={entry.handle.name}
                         entry={entry}
                         handleClick={handleEntryClick}

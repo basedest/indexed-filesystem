@@ -1,4 +1,4 @@
-export default interface DirectoryEntry {
+export default interface FileSystemEntryEntity {
     handle: FileSystemFileHandle | FileSystemDirectoryHandle;
     file?: File;
 }

@@ -1,11 +1,11 @@
+import IDBManager from '@shared/lib/idb/IDBManager';
 import { useCallback, useEffect, useState } from 'react';
-import DirectoryView from './components/Directory';
-import IDBManager from './features/idb/IDBManager';
+import DirectoryView from '@widgets/DirectoryView/DirectoryView';
 
 const buttonClasses =
     'bg-blue-600 hover:bg-blue-700 transition hover:scale-105 text-white py-2 px-4 rounded-xl mb-4 mx-auto block';
 
-function App() {
+function MainPage() {
     const [directoryHandle, setDirectoryHandle] =
         useState<null | FileSystemDirectoryHandle>(null);
     const [idb, setIdb] = useState<IDBManager | null>(null);
@@ -98,4 +98,4 @@ function App() {
     );
 }
 
-export default App;
+export default MainPage;

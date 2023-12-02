@@ -1,15 +1,15 @@
 import { memo } from 'react';
 import FolderIcon from '@heroicons/react/24/outline/FolderIcon';
 import FileIcon from '@heroicons/react/24/outline/DocumentIcon';
-import DirectoryEntryEntity from '../entities/DirectoryEntry';
-import { bytesToSize, clipName, isDir } from '../utils/commonUtils';
+import type { FileSystemEntryEntity } from '@entities/FileSystemEntry/model';
+import { bytesToSize, clipName, isDir } from '@shared/lib/commonUtils';
 
 interface Props {
-    entry: DirectoryEntryEntity;
+    entry: FileSystemEntryEntity;
     handleClick: (handle: FileSystemHandle) => void;
 }
 
-function DirectoryEntry({ entry, handleClick }: Props) {
+function FileSystemEntry({ entry, handleClick }: Props) {
     const { handle, file } = entry;
     return (
         <li
@@ -40,4 +40,4 @@ function DirectoryEntry({ entry, handleClick }: Props) {
     );
 }
 
-export default memo(DirectoryEntry);
+export default memo(FileSystemEntry);

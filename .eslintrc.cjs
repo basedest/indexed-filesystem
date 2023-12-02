@@ -44,10 +44,12 @@ module.exports = {
     plugins: ['@typescript-eslint', 'react', 'prettier'],
     rules: {
         ...a11yOff,
+        'prettier/prettier': 'error',
+        'import/no-extraneous-dependencies': ['warn'],
+        'react/jsx-props-no-spreading': ['warn'],
         'react/react-in-jsx-scope': ['off'],
         'react/jsx-uses-react': ['off'],
-        'react/jsx-props-no-spreading': ['warn'],
         'react/no-unescaped-entities': ['off'],
-        'prettier/prettier': 'error',
+        'import/prefer-default-export': ['off'],
     },
 };

@@ -1,4 +1,4 @@
-import DirectoryEntry from '../../entities/DirectoryEntry';
+import type { FileSystemEntryEntity } from '../model';
 
 export default class FileNavigator {
     private readonly root: FileSystemDirectoryHandle;
@@ -33,7 +33,7 @@ export default class FileNavigator {
     }
 
     public async getContents() {
-        const entries: DirectoryEntry[] = [];
+        const entries: FileSystemEntryEntity[] = [];
         // @ts-expect-error because TypeScript doesn't know about FileSystemDirectoryHandle.values() yet
         // eslint-disable-next-line no-restricted-syntax
         for await (const handle of this.pathStack.at(-1)!.values()) {
