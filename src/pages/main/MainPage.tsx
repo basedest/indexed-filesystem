@@ -1,34 +1,21 @@
-import IDBManager from '@shared/lib/idb/IDBManager';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import DirectoryView from '@widgets/DirectoryView/DirectoryView';
+import { useIdbStore } from '@shared/lib/idb/IdbStore';
+import { Button, Flex } from 'antd';
 
-const buttonClasses =
-    'bg-blue-600 hover:bg-blue-700 transition hover:scale-105 text-white py-2 px-4 rounded-xl mb-4 mx-auto block';
+// const buttonClasses =
+//     'bg-blue-600 hover:bg-blue-700 transition hover:scale-105 text-white py-2 px-4 rounded-xl mb-4 mx-auto block';
 
 function MainPage() {
-    const [directoryHandle, setDirectoryHandle] =
-        useState<null | FileSystemDirectoryHandle>(null);
-    const [idb, setIdb] = useState<IDBManager | null>(null);
-    const [popUp, setPopUp] = useState(false);
+    const root = useIdbStore((state) => state.root);
+    const setRoot = useIdbStore((state) => state.setRoot);
+    const [permissionGranted, setPermissionGranted] = useState(false);
     const [error, setError] = useState(false);
 
-    useEffect(() => {
-        (async () => {
-            const idbInstance = await IDBManager.init();
-            setIdb(idbInstance);
-            const storedValue = await idbInstance.getRoot();
-            if (!storedValue) {
-                return;
-            }
-            setDirectoryHandle(storedValue);
-            setPopUp(true);
-        })();
-    }, []);
-
-    const onPopUpClicked = useCallback(async () => {
+    const onPermissionRequest = useCallback(async () => {
         try {
             // @ts-expect-error: bro doesn't know about FileSystemDirectoryHandle.requestPermission yet
-            const permission = await directoryHandle.requestPermission({
+            const permission = await root.requestPermission({
                 mode: 'readwrite',
             });
             if (permission !== 'granted') {
@@ -38,9 +25,9 @@ function MainPage() {
             console.error(e);
             setError(true);
         } finally {
-            setPopUp(false);
+            setPermissionGranted(true);
         }
-    }, [directoryHandle]);
+    }, [root]);
 
     const onChooseDirectoryClicked = useCallback(async () => {
         try {
@@ -48,36 +35,32 @@ function MainPage() {
             const handle = await window.showDirectoryPicker({
                 type: 'openDirectory',
             });
-            setDirectoryHandle(handle);
-            idb!.setRoot(handle);
+            await setRoot(handle);
             setError(false);
         } catch (e: unknown) {
             console.error(e);
             setError(true);
         }
-    }, [idb]);
+    }, []);
 
     return (
         <main className="flex justify-center items-center bg-gray-100">
             <div className="w-full max-w-3xl bg-white shadow-md p-5 min-h-screen">
-                {popUp ? (
-                    <button
-                        type="button"
-                        onClick={onPopUpClicked}
-                        className={buttonClasses}
-                    >
-                        Grant permission
-                    </button>
-                ) : (
-                    <button
-                        type="button"
-                        disabled={!idb}
-                        className={buttonClasses}
-                        onClick={onChooseDirectoryClicked}
-                    >
+                <Flex className="gap-2 justify-center">
+                    {root && !permissionGranted && (
+                        <Button
+                            className="bg-blue-500"
+                            type="primary"
+                            size="large"
+                            onClick={onPermissionRequest}
+                        >
+                            Grant permission
+                        </Button>
+                    )}
+                    <Button size="large" onClick={onChooseDirectoryClicked}>
                         Set new root
-                    </button>
-                )}
+                    </Button>
+                </Flex>
                 {error ? (
                     <section className="flex flex-col items-center">
                         <h1 className="text-lg font-medium text-red-600">
@@ -88,9 +71,9 @@ function MainPage() {
                         </p>
                     </section>
                 ) : (
-                    directoryHandle &&
-                    !popUp && (
-                        <DirectoryView directoryHandle={directoryHandle} />
+                    root &&
+                    permissionGranted && (
+                        <DirectoryView directoryHandle={root} />
                     )
                 )}
             </div>

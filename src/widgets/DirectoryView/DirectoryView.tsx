@@ -4,6 +4,7 @@ import { isDir } from '@shared/lib/commonUtils';
 import FileNavigator from '@entities/FileSystemEntry/lib/FileNavigator';
 import FileSystemEntry from '@entities/FileSystemEntry/ui/FileSystemEntry';
 import type { FileSystemEntryEntity } from '@entities/FileSystemEntry/model';
+import { Breadcrumb, Button } from 'antd';
 
 const sortCallback = (
     lhs: FileSystemEntryEntity,
@@ -34,10 +35,11 @@ export default function DirectoryView({
         () => new FileNavigator(rootHandle),
         [rootHandle],
     );
-    const path = useMemo(
-        () => fileNavigator.getPath().slice(0, -1),
-        [directoryEntries],
-    );
+
+    const breadCrumbsItems = useMemo(() => {
+        const items = fileNavigator.getPathItems();
+        return items.map((item) => ({ title: item }));
+    }, [directoryEntries]);
 
     useEffect(() => {
         fileNavigator
@@ -48,7 +50,6 @@ export default function DirectoryView({
     const handleEntryClick = useCallback(
         async (entry: FileSystemHandle) => {
             try {
-                console.debug(entry);
                 if (!(entry instanceof FileSystemDirectoryHandle)) {
                     return;
                 }
@@ -75,16 +76,16 @@ export default function DirectoryView({
     return (
         <div className="mx-auto max-w-screen-md">
             <div className="flex items-center mb-4">
-                {!fileNavigator.isRoot() && (
-                    <button
-                        type="button"
-                        className="text-blue-500 hover:underline mr-2"
-                        onClick={handleBackClick}
-                    >
-                        <ArrowLeftIcon className="h-5 w-5" />
-                    </button>
-                )}
-                <h2 className="text-lg font-medium">{path}</h2>
+                <Button
+                    type="link"
+                    size="small"
+                    icon={<ArrowLeftIcon className="h-5 w-5" />}
+                    shape="circle"
+                    className="text-blue-500 hover:underline mr-2"
+                    onClick={handleBackClick}
+                    disabled={fileNavigator.isRoot()}
+                />
+                <Breadcrumb items={breadCrumbsItems} />
             </div>
             <ul className="space-y-2">
                 {directoryEntries.sort(sortCallback).map((entry) => (

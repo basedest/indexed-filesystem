@@ -1,3 +1,5 @@
-static/
-dist/
 node_modules/
+dist/
+.vscode/
+.cache/
+static/

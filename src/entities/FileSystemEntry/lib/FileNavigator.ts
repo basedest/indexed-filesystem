@@ -51,6 +51,10 @@ export default class FileNavigator {
         return this.pathStack.length === 1;
     }
 
+    public getPathItems() {
+        return this.pathStack.map((handle) => handle.name);
+    }
+
     public getPath() {
         return this.pathStack.reduce(
             (path: string, elem) => path.concat(`${elem.name}/`),

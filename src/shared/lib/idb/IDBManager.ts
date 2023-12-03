@@ -4,13 +4,19 @@ import { DB_NAME, ROOT_KEY, STORE_NAME, AppSchema } from './schema';
 export default class IDBManager {
     private constructor(private db: IDBPDatabase<AppSchema>) {}
 
-    public static async init(dbName = DB_NAME): Promise<IDBManager> {
-        const db = await openDB<AppSchema>(dbName, 1, {
-            upgrade(database) {
-                database.createObjectStore(STORE_NAME);
-            },
-        });
-        return new IDBManager(db);
+    private static instance: IDBManager | null = null;
+
+    public static async getInstance(dbName = DB_NAME): Promise<IDBManager> {
+        return (
+            IDBManager.instance ??
+            new IDBManager(
+                await openDB<AppSchema>(dbName, 1, {
+                    upgrade(database) {
+                        database.createObjectStore(STORE_NAME);
+                    },
+                }),
+            )
+        );
     }
 
     public async getRoot() {

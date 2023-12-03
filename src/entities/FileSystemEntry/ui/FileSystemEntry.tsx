@@ -4,10 +4,10 @@ import FileIcon from '@heroicons/react/24/outline/DocumentIcon';
 import type { FileSystemEntryEntity } from '@entities/FileSystemEntry/model';
 import { bytesToSize, clipName, isDir } from '@shared/lib/commonUtils';
 
-interface Props {
+type Props = {
     entry: FileSystemEntryEntity;
     handleClick: (handle: FileSystemHandle) => void;
-}
+};
 
 function FileSystemEntry({ entry, handleClick }: Props) {
     const { handle, file } = entry;

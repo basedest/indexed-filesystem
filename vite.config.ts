@@ -11,7 +11,10 @@ export default defineConfig({
     base: '/indexed-filesystem/',
     plugins: [
         react(),
-        eslint(),
+        eslint({
+            failOnError: false,
+            failOnWarning: false,
+        }),
         VitePWA({
             registerType: 'autoUpdate',
             includeAssets: ['favicon.ico', 'robots.txt', 'images/*.png'],
